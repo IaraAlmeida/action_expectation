@@ -25,17 +25,6 @@ for x = 1:length(fileList)
     cfg.channel = ft_channelselection('A*', data.label);
     Acc = ft_selectdata(cfg, data);
     
-    %% preprocessing
-    cfg             = [];
-    cfg.dpf         = 5; %redo for proper dpf 
-    dataP           = ft_nirs_transform_ODs(cfg, NIRS); % IN MICROMOLAR
-
-    cfg = [];
-    cfg.bpfilter = 'yes';
-    cfg.bpfilttype ='firws';
-    cfg.bpfreq = [0.01 0.1];
-    data_filtered = ft_preprocessing(cfg, dataP);
-    
     %% Epochs
     cfg                                   = [];
     cfg.dataset                           = ['C:\Users\Daphne\Desktop\PilotTommasoAugust\' sub];
@@ -56,7 +45,7 @@ for x = 1:length(fileList)
     eliminate3 = ismember({def_trial.event.value}, [Triggers.Action, Triggers.Omission]);
     def_trial.event = def_trial.event(eliminate3);
 
-    data_epoch = ft_redefinetrial(def_trial, data_filtered);
+    data_epoch = ft_redefinetrial(def_trial, data);
 
     %baseline correction
     cfg= [];
@@ -93,54 +82,68 @@ for x = 1:length(fileList)
         P = ft_appenddata(cfg, P, Presentation);
         O = ft_appenddata(cfg, O, Omission);
     end
+ 
+ raw_pca_ica(Omission)
+    
+    
+%     %% preprocessing
+%     cfg             = [];
+%     cfg.dpf         = 5; %redo for proper dpf 
+%     dataP           = ft_nirs_transform_ODs(cfg, NIRS); % IN MICROMOLAR
+% 
+%     cfg = [];
+%     cfg.bpfilter = 'yes';
+%     cfg.bpfilttype ='firws';
+%     cfg.bpfreq = [0.01 0.1];
+%     data_filtered = ft_preprocessing(cfg, dataP);
 end
 
-
-%% Prepare Layout
-load('baby_head');
-
-
-%% Timelock Analysis All
-cfg                   = [];
-cfg.channel           = 1:2:90;
-[tomlock_O2Hb_o]      = ft_timelockanalysis(cfg, O);
-
-cfg                   = [];
-cfg.channel           = 1:2:90;
-[tomlock_O2Hb_p]      = ft_timelockanalysis(cfg, P);
-
-cfg                   = [];
-cfg.channel           = 2:2:90; 
-[tomlock_HHb_o]       = ft_timelockanalysis(cfg, O);
-
-cfg                   = [];
-cfg.channel           = 2:2:90; 
-[tomlock_HHb_p]       = ft_timelockanalysis(cfg, P);
-
-tomlock_HHb_o.label = tomlock_O2Hb_p.label;%quick fix to have same labels as layout
-tomlock_HHb_p.label = tomlock_O2Hb_p.label;
-baby_head.label     = tomlock_O2Hb_p.label;
-
-
-%% Plot axial gradient results
-
-cfg                   = [];
-cfg.showlabels        = 'yes';
-cfg.layout            = baby_head;
-cfg.interactive       = 'yes';
-cfg.linecolor         = 'rb';
-cfg.ylim = [-5 5];
-cfg.xlim = [-1 15];
-cfg.layout.outline = {};
-cfg.linewidth = 1;
-
-figure;
-subplot(2, 1, 1)
-ft_multiplotER(cfg, tomlock_O2Hb_o, tomlock_HHb_o)
-title('Omission');
-
-subplot(2, 1, 2)
-ft_multiplotER(cfg, tomlock_O2Hb_p, tomlock_HHb_p)
-title('Presentation');
+% 
+% %% Prepare Layout
+% load('baby_head');
+% 
+% 
+% %% Timelock Analysis All
+% cfg                   = [];
+% cfg.channel           = 1:2:90;
+% [tomlock_O2Hb_o]      = ft_timelockanalysis(cfg, O);
+% 
+% cfg                   = [];
+% cfg.channel           = 1:2:90;
+% [tomlock_O2Hb_p]      = ft_timelockanalysis(cfg, P);
+% 
+% cfg                   = [];
+% cfg.channel           = 2:2:90; 
+% [tomlock_HHb_o]       = ft_timelockanalysis(cfg, O);
+% 
+% cfg                   = [];
+% cfg.channel           = 2:2:90; 
+% [tomlock_HHb_p]       = ft_timelockanalysis(cfg, P);
+% 
+% tomlock_HHb_o.label = tomlock_O2Hb_p.label;%quick fix to have same labels as layout
+% tomlock_HHb_p.label = tomlock_O2Hb_p.label;
+% baby_head.label     = tomlock_O2Hb_p.label;
+% 
+% 
+% %% Plot axial gradient results
+% 
+% cfg                   = [];
+% cfg.showlabels        = 'yes';
+% cfg.layout            = baby_head;
+% cfg.interactive       = 'yes';
+% cfg.linecolor         = 'rb';
+% cfg.ylim = [-5 5];
+% cfg.xlim = [-1 15];
+% cfg.layout.outline = {};
+% cfg.linewidth = 1;
+% 
+% figure;
+% subplot(2, 1, 1)
+% ft_multiplotER(cfg, tomlock_O2Hb_o, tomlock_HHb_o)
+% title('Omission');
+% 
+% subplot(2, 1, 2)
+% ft_multiplotER(cfg, tomlock_O2Hb_p, tomlock_HHb_p)
+% title('Presentation');
 
 
