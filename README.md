@@ -8,7 +8,7 @@ Authors are:
 I de Almeida Ivo(1)(2) 
 T Ghilardi(2)
 
-1)Artinis Medical Systems BV
+1)Artinis Medical Systems BV [i.dealmeidaivo@donders.ru.nl]
 2)Donders Institute for Brain, Cognition and Behaviour
 
 
