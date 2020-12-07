@@ -39,23 +39,31 @@ collapse = [imu_turn which_imu];
 YMatrix_C = YMatrix1;
 for val = (1:3)
     pair_ind = find(collapse(:,2)==val);
+    pair_1 = pair_ind(1:2:end)
+    pair_2 = pair_ind(2:2:end)
     %% introduce here better way of finding single points. This code doesn't
     %work for single points
     if pair_ind ~= 0
-        if rem(pair_ind, 2) == 0 
+        if rem(length(pair_ind), 2) == 0
             pair_ind = pair_ind;
+            f = 1
         else
-            pair_ind = [pair_ind; pair_ind(end)+1];
-            imu_turn = [imu_turn; imu_turn(end)+1];
+            pair_ind = [pair_ind; pair_ind(end)+1]
+            imu_turn = [imu_turn; imu_turn(end)+1]
+            f=2
+            if pair_2 ~= 0
+                pair_2   = [pair_2; pair_2(end)+1]
+                f = 3
+            else
+                pair_2   = [pair_1(end)+1]
+                f = 4
+            end
         end
     end
     %%
-    
-    pair_1 = pair_ind(1:2:end);
-    pair_2 = pair_ind(2:2:end);
     pair_imu   = [imu_turn(pair_1) imu_turn(pair_2)];
     
-    for p = 1:length(pair_imu)
+    for p = 1:size(pair_imu, 1)
         if p == 1 %odd must adapt
        
             YMatrix_C(pair_imu(p,1)+1 : pair_imu(p,2), val) = ...
@@ -82,11 +90,11 @@ end
 
 createfigure1(X1, YMatrix_C);
 hold on; 
-title('Normalized Values with IMU jitters corrected');
+title('Values with IMU jitters corrected');
 grid on;
 
  
-YMatrix_NN = YMatrix_C - median(YMatrix1(:, 1:3));
+YMatrix_NN = YMatrix_C - median(YMatrix_C(:, 1:3));
 createfigure1(X1, YMatrix_NN);
-title('Normalized with median value');
+title('Corrected for Median Displacement');
 
